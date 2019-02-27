@@ -1,0 +1,21 @@
+FROM java:8
+
+# Creating app directory
+WORKDIR /transformation-KafkaConsumer
+
+RUN apt-get update
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update
+RUN apt-get install -y nodejs
+
+COPY . .
+
+RUN echo "#!/bin/bash" >> run.sh
+
+RUN echo "node ./proxy/build/proxy.js --address http://0.0.0.0 --registry http://10.20.30.2:3000 &" >> run.sh
+
+RUN echo "java -jar ./target/KafkaConsumer.jar" >> run.sh
+
+RUN chmod +x run.sh
+
+CMD ["./run.sh"]

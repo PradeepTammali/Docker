@@ -1,0 +1,21 @@
+FROM java:8
+
+# Creating app directory
+WORKDIR /ui-support
+
+RUN apt-get update
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update
+RUN apt-get install -y nodejs
+
+COPY . .
+
+RUN echo "#!/bin/bash" >> run.sh
+
+RUN echo "node ./proxy/build/proxy.js --address http://0.0.0.0 --registry http://10.202.25.206:3000 &" >> run.sh
+
+RUN echo "java -jar ./target/ui-support.war" >> run.sh
+
+RUN chmod +x run.sh
+
+CMD ["./run.sh"]

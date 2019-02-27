@@ -1,0 +1,19 @@
+FROM node:latest
+
+# Creating app directory
+WORKDIR /images
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+
+#RUN npm install
+# If you are building your code for production
+# RUN npm install  --only=production
+
+# Bundle app source
+COPY . .
+
+#EXPOSE 10012
+
+CMD node ./build/images.js  --address http://0.0.0.0 --registry http://10.20.30.2:3000 --fileSystemRoot $imagesRootDir

@@ -1,0 +1,41 @@
+                                        Scullog
+
+Scullog, having capability of sharing the local drive to the browser.
+Stream the log file via Socket.IO over browser. It runs on any platform such as windows/linux/mac. 
+It runs as a service or in standalone mode.
+
+Dockerfile
+***************************
+FROM node:latest
+EXPOSE 9092
+RUN npm install -g scullog
+CMD ["scullog", "-d", "/home/ubuntu/LOG", "-p", "9092"]
+
+Node 
+****************************
+sudo npm install -g scullog
+
+scullog -s install -p 8080 -d /path/to/
+
+
+
+                                        log.io
+
+Log.io - Real-time log monitoring in your browser. 
+Harvesters watch log files for changes, send new log messages to the server via TCP, which broadcasts to web clients via socket.io.
+
+Docker command 
+****************************
+docker run -d -p 28778:28778 -e SHOW_ALL_LOGS=true -v /var/run/docker.sock:/var/run/docker.sock --name=logio geniousphp/logio
+
+
+                                        web-ui
+
+A web interface of Docker remote APIs. 
+
+Docker command
+****************************
+docker run -d -p 9000:9000 --rm -v /var/run/docker.sock:/var/run/docker.sock pottava/docker-webui --name docker-web-ui
+
+https://github.com/pottava/docker-webui/
+
