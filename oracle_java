@@ -1,0 +1,39 @@
+FROM ubuntu:16.04
+USER root
+
+RUN apt-get update
+RUN apt-get install -y \
+    aufs-tools \
+    automake \
+    wget \
+    build-essential \
+    curl \
+    dpkg-sig \
+    libcap-dev \
+    libsqlite3-dev \
+    mercurial \
+    reprepro \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /user/local/
+
+RUN  wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
+
+RUN tar -zxvf jdk-8u131-linux-x64.tar.gz -C /user/local/
+RUN mv /user/local/jdk1.8.0_131 /user/local/java
+RUN rm -rf jdk-8u131-linux-x64.tar.gz
+
+RUN update-alternatives --install "/usr/bin/java" "java" "/user/local/java/bin/java" 100
+RUN update-alternatives --install "/usr/bin/javac" "javac" "/user/local/java/bin/javac" 100
+RUN update-alternatives --install "/usr/bin/jar" "jar" "/user/local/java/bin/jar" 100
+
+RUN update-alternatives --set java /user/local/java/bin/java
+RUN update-alternatives --set javac /user/local/java/bin/javac
+RUN update-alternatives --set jar /user/local/java/bin/jar
+
+RUN export JAVA_HOME=/user/local/java/
+RUN export JRE_HOME=/user/local/java/jre
+RUN export PATH=$PATH:/user/local/java/bin:/user/local/java/jre
+
+
+

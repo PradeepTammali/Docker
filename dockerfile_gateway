@@ -1,0 +1,51 @@
+FROM python:2.7
+
+MAINTAINER pradeepkumartammali@gmail.com
+
+# Default directory where all the files are contained
+WORKDIR /home/pradeep/api_gateway
+
+# Creating a new user "pradeep"
+RUN groupadd -g 433 pradeep && \
+    useradd -u 7146260 -g pradeep -d /home/pradeep -s /bin/bash -c "Docker image user" pradeep 
+
+# Installing dependencies 
+RUN apt-get update -y && apt-get install -y \
+     default-libmysqlclient-dev \
+     openssl \
+     python-openssl
+
+# Cleaning the old source files 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN pip2 install --upgrade pip
+
+# Installing dependencies 
+RUN pip install requests 
+
+# Copying from host machine to container
+COPY . .
+
+# Copying certificates and private key for authorization purpose && Reading permission and execute to the files 
+RUN mv certificate.crt /etc/ssl/certs/certificate.crt &&  mv certificate.key /etc/ssl/private/certificate.key && chmod 755 -R /etc/ssl/certs/ && chmod 755 -R /etc/ssl/private/
+
+# Environment variables for the gunicorn to run as non root user
+ENV USER pradeep
+ENV GROUP pradeep
+
+# For storing the application logs  TODO: make this commented if we are mounting logs to the server 
+RUN mkdir /home/pradeep/logs && chmod 777 -R /home/pradeep/logs
+
+# Configuration file for the application
+RUN mkdir /home/pradeep/myconfig && chmod 777 -R /home/pradeep/myconfig
+ENV PYTHONPATH /home/pradeep/myconfig
+
+# Moving Startup script to according location and Giving read and execute permissions
+RUN mv startup_* /home/pradeep/startup_gateway.sh && chmod 755 /home/pradeep/startup_api_gateway.sh
+
+# Ports below 1024 can not be assigned by non root user
+EXPOSE 8888
+
+USER pradeep
+
+CMD ["/home/pradeep/startup_gateway.sh"]
